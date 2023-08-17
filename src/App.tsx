@@ -15,7 +15,7 @@ function App() {
   const [qrCodeData, setQrCodeData ] = useState<any| null>(null);
   const videoEl = useRef<HTMLVideoElement>(null);
 
-  const initCamera = async()=>{
+  const startCameraStreaming = async() =>{
     const stream = await navigator.mediaDevices.getUserMedia({
       video: {
         facingMode: {
@@ -23,31 +23,42 @@ function App() {
         }
       },
     });
-    setCameraStream(stream);
-    if(videoEl.current){
-      console.log('srcobject set');
-      videoEl.current.srcObject = stream;
-      videoEl.current.onloadedmetadata = () =>{
-        videoEl.current!.play()
-      }
-      const data: any = await QrCodeDecoder.decodeFromVideo(videoEl.current);
-      console.log('readed data:', data);
-      setQrCodeData(data.data);
+    setCameraStream(stream)
+  }
+
+  const attachStreamToVideoEl = async()=>{
+    videoEl.current!.srcObject = cameraStream!;
+    videoEl.current!.onloadedmetadata = () =>{
+      videoEl.current!.play()
     }
-  }  
+    const data: any = await QrCodeDecoder.decodeFromVideo(videoEl.current!);
+    console.log('readed data:', data);
+    setQrCodeData(data.data);
+  } 
+
+
 
   useEffect(
     () =>{
-      initCamera();
+      startCameraStreaming();
     },
     []
+  );
+
+  useEffect(
+    () =>{
+      if(cameraStream && videoEl.current){
+        attachStreamToVideoEl();
+      }
+    },
+    [cameraStream, videoEl.current]
   );
   
   if(!cameraStream){
     return(
       <div>
         <p>Você precisa fornecer permissão de acesso à câmera para poder scanear o QRCode.</p>
-        <button onClick={initCamera}>Solicitar permissoes</button>
+        <button onClick={startCameraStreaming}>Solicitar permissoes</button>
       </div>
     );
   }
