@@ -11,7 +11,6 @@ function App() {
 
   const QrCodeDecoder = useQrCodeDecoder();
   const [cameraStream, setCameraStream] = useState<MediaStream | null>();
-  const [cameraStreamUrl, setCameraStreamUrl] = useState<string | null>();
   const [qrCodeData, setQrCodeData ] = useState<any| null>(null);
   const videoEl = useRef<HTMLVideoElement>(null);
 
@@ -19,7 +18,7 @@ function App() {
     const stream = await navigator.mediaDevices.getUserMedia({
       video: {
         facingMode: {
-          ideal: 'environmnet'
+          ideal: 'environment'
         }
       },
     });
